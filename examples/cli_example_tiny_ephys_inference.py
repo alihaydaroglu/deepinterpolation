@@ -44,9 +44,7 @@ if __name__ == '__main__':
     # Replace this path to where you want to store your output file
     inference_param[
         "output_file"
-    ] = "/Users/jeromel/Desktop/test/\
-        ephys_tiny_continuous_deep_interpolation.h5"
-
+    ] = "ephys_tiny_continuous_deep_interpolation.h5"
     # This option is to add blank frames at the onset and end of the output
     # movie if some output frames are missing input frames to go through
     # the model. This could be present at the start and end of the movie.
