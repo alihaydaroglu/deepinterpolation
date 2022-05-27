@@ -10,6 +10,23 @@ class TifGenerator(DeepGenerator):
     def __init__(self,tif_paths, padded_size, batch_size, verbose=3,
                  pre_post_frame = 3, edge_buffer=20, sampling_stride=7, n_samples = None,
                  normalizer_sample_size = 100, n_procs_io = 14, shuffle=True, seed=2358):
+        '''
+        Create new instance of TifGenerator.
+
+        Args:
+            tif_paths (list): list of paths to .tif files
+            padded_size (int): Size to pad each tiff to in x and y (will create squares). 
+            batch_size (int): batch size
+            verbose (int, optional): 0-3 verbosity levels. Defaults to 3.
+            pre_post_frame (int, optional): Number of frames before/after center frame. Defaults to 3.
+            edge_buffer (int, optional): Number of frames at the edge (start/end) of a file to discard. Defaults to 20.
+            sampling_stride (int, optional): Distance separating successive samples from a given file. Defaults to 7.
+            n_samples (int, optional): Optional, enter an int to limit the number of samples in this generator. Defaults to None.
+            normalizer_sample_size (int, optional): How many frames from each file to sample to calculate the mean and standard deviation. Defaults to 100.
+            n_procs_io (int, optional): Number of processes while calculating the mean/std of each file. Defaults to 14.
+            shuffle (bool, optional): Shuffle indices. Defaults to True.
+            seed (int, optional): Random seed. Defaults to 2358.
+        '''        
         self.files = tif_paths
         self.nxy = padded_size
         self.batch_size = batch_size
