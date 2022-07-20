@@ -13,6 +13,9 @@ from tensorflow.keras.models import load_model
 from packaging import version
 import warnings
 
+import time
+debug = False
+
 
 def create_decay_callback(initial_learning_rate, epochs_drop):
     """ This is a helper function to return a configured
@@ -131,13 +134,13 @@ class core_trainer:
             if auto_compile:
                 self.compile()
 
-    def compile(self):
+    def compile(self, args={}):
         self.local_model.compile(
-            loss=self.loss, optimizer=self.optimizer
+            loss=self.loss, optimizer=self.optimizer, **args
         )  # , metrics=['mae'])
 
     def initialize_optimizer(self):
-        self.optimizer = RMSprop(lr=self.learning_rate)
+        self.optimizer = RMSprop(learning_rate=self.learning_rate)
 
     def initialize_loss(self):
         self.loss = lc.loss_selector(self.loss_type)
@@ -146,8 +149,7 @@ class core_trainer:
 
         checkpoint_path = os.path.join(
             self.checkpoints_dir,
-            self.run_uid + "_" + self.model_string +
-            "-{epoch:04d}-{val_loss:.4f}.h5",
+            "model-{epoch:04d}-{val_loss:.4f}.h5",
         )
         checkpoint = ModelCheckpoint(
             checkpoint_path,
@@ -174,6 +176,7 @@ class core_trainer:
 
         if version.parse(tensorflow.__version__) <= version.parse("2.1.0"):
             callbacks_list.append(epo_end)
+        callbacks_list.append(epo_end)
 
         self.callbacks_list = callbacks_list
 
@@ -328,7 +331,6 @@ class OnEpochEnd(tensorflow.keras.callbacks.Callback):
         for callback in self.callbacks:
             callback()
 
-
 class transfer_trainer(core_trainer):
     # This class is used to fine-tune a pre-trained model with additional data
 
@@ -336,13 +338,13 @@ class transfer_trainer(core_trainer):
         self, generator_obj, test_generator_obj,
         trainer_json_path, auto_compile=True,
     ):
-
         # self.network_obj = network_obj
         self.local_generator = generator_obj
         self.local_test_generator = test_generator_obj
 
         json_obj = JsonLoader(trainer_json_path)
-
+        
+        if debug: print("Loaded JSON")
         # the following line is to be backward compatible in case
         # new parameter logics are added.
         json_obj.set_default("apply_learning_decay", 0)
@@ -393,9 +395,20 @@ class transfer_trainer(core_trainer):
 
         self.nb_times_through_data = self.json_data["nb_times_through_data"]
 
+
+        if debug: 
+            print("Loaded params")
+            time.sleep(5)
+            print("Continuing")
+
         # Generator has to be initialized first to provide
         # input size of network
         self.initialize_generator()
+        if debug: 
+            print("Init generator")
+            time.sleep(5)
+            print("Continuing")
+
 
         if self.nb_gpus > 1:
             mirrored_strategy = tensorflow.distribute.MirroredStrategy()
@@ -413,15 +426,35 @@ class transfer_trainer(core_trainer):
         else:
             if auto_compile:
                 self.initialize_network()
+                if debug: 
+                    print("Init network")
+                    time.sleep(5)
+                    print("Continuing")
 
             self.initialize_callbacks()
+            if debug: 
+                print("Init callback")
+                time.sleep(5)
+                print("Continuing")
 
             self.initialize_loss()
+            if debug: 
+                print("Init loss")
+                time.sleep(5)
+                print("Continuing")
 
             self.initialize_optimizer()
+            if debug: 
+                print("Init opt")
+                time.sleep(5)
+                print("Continuing")
 
             if auto_compile:
                 self.compile()
+                if debug: 
+                    print("Compile")
+                    time.sleep(5)
+                    print("Continuing")
 
         # For transfer learning, knowing the
         # baseline validation loss is important
@@ -431,6 +464,9 @@ class transfer_trainer(core_trainer):
             workers=self.workers,
             use_multiprocessing=self.use_multiprocessing
         )
+        if debug: 
+            print("Calc val loss")
+            print("Done")
 
     def initialize_network(self):
         self.__load_model()
@@ -504,8 +540,18 @@ class transfer_trainer(core_trainer):
 
     def __load_model(self):
         try:
+            if debug: 
+                print("get model path")
             local_model_path = self.__get_local_model_path()
+            if debug:
+                print(local_model_path)
+                print("done")
+                time.sleep(5)
+                print("loading local model")
             self.__load_local_model(path=local_model_path)
+            if debug:
+                print("loaded local model")
+                time.sleep(5)
         except KeyError:
             self.__load_model_from_mlflow()
 

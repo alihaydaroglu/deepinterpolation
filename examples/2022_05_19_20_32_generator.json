@@ -1,0 +1,15 @@
+{
+  "pre_frame": 30,
+  "start_frame": 100,
+  "name": "EphysGenerator",
+  "pre_post_omission": 1,
+  "randomize": false,
+  "data_path": "C:\\ali\\packages\\lbm\\deepinterpolation\\examples\\..\\sample_data\\ephys_tiny_continuous.dat2",
+  "batch_size": 100,
+  "total_samples": -1,
+  "post_frame": 30,
+  "end_frame": 200,
+  "steps_per_epoch": -1,
+  "type": "generator",
+  "train_path": "C:\\ali\\packages\\lbm\\deepinterpolation\\examples\\..\\sample_data\\ephys_tiny_continuous.dat2"
+}

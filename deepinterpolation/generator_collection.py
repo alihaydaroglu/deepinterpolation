@@ -8,6 +8,7 @@ import nibabel as nib
 import glob
 from deepinterpolation.generic import JsonLoader
 
+TESTER = 'TEST'
 
 class MaxRetryException(Exception):
     # This is helper class for EmGenerator
@@ -789,14 +790,23 @@ class SingleTifGenerator(SequentialGenerator):
     should be consistent through training. a maximum of 1000 frames are pulled
     from the beginning of the movie to estimate mean and std."""
 
-    def __init__(self, json_path):
+    def __init__(self, json_path, n_pad=None):
         "Initialization"
         super().__init__(json_path)
 
         self.raw_data_file = self.json_data["train_path"]
 
         with tifffile.TiffFile(self.raw_data_file) as tif:
-            self.raw_data = tif.asarray()
+            if n_pad is not None:
+                print("Padding")
+                tif_in = tif.asarray()
+                tif_nz, tif_ny, tif_nx = tif_in.shape
+                self.raw_data = np.zeros((tif_nz, n_pad, n_pad))
+                print(tif_nz, tif_ny, tif_nx)
+                self.raw_data[:,:min(tif_ny,n_pad), :min(tif_nx,n_pad)] = tif_in[:,:min(tif_ny,n_pad), :min(tif_nx,n_pad)]
+                print("Padded to shape: ", self.raw_data.shape)
+            else:
+                self.raw_data = tif.asarray()
 
         self.total_frame_per_movie = self.raw_data.shape[0]
 
@@ -812,7 +822,7 @@ class SingleTifGenerator(SequentialGenerator):
 
     def __getitem__(self, index):
         shuffle_indexes = self.generate_batch_indexes(index)
-
+        print("loading index %d of file %s" % (index, self.raw_data_file))
         input_full = np.zeros(
             [
                 self.batch_size,
@@ -834,6 +844,7 @@ class SingleTifGenerator(SequentialGenerator):
             input_full[batch_index, :, :, :] = X
             output_full[batch_index, :, :, :] = Y
 
+        print("Input size: %s, Output size: %s" % (str(input_full.shape), str(output_full.shape)))
         return input_full, output_full
 
     def __data_generation__(self, index_frame):

@@ -1,0 +1,12 @@
+{
+  "model_source": {
+    "local_path": "C:\\ali\\packages\\lbm\\deepinterpolation\\examples\\..\\sample_data\\2020_02_29_15_28_unet_single_ephys_1024_mean_squared_error-1050.h5"
+  },
+  "output_datatype": "float32",
+  "name": "core_inferrence",
+  "rescale": true,
+  "save_raw": false,
+  "output_file": "ephys_tiny_continuous_deep_interpolation.h5",
+  "output_padding": false,
+  "type": "inferrence"
+}

@@ -1,0 +1,1 @@
+{"type": "generator", "steps_per_epoch": 10, "name": "EphysGenerator", "pre_post_frame": 30, "train_path": "deepinterpolation\\sample_data\\ephys_tiny_continuous.dat2", "batch_size": 100, "start_frame": 2000, "end_frame": 7099, "pre_post_omission": 1}

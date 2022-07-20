@@ -210,14 +210,12 @@ def get_in_out_idxs(n_frames, edge_buffer = 10, pre_post_frame = 3, sampling_str
 
     valid_frames = n.arange(edge_buffer, n_frames - edge_buffer)
 
-
-    n_samples = len(valid_frames) // sampling_stride
-
+    n_samples = (len(valid_frames)  - 2*pre_post_frame )// sampling_stride
     idx = 0
     for i in range(n_samples):
-        start = idx
-        center = idx + pre_post_frame
-        fin = idx + 2*pre_post_frame+1
+        start = idx + pre_post_frame
+        center = idx + 2*pre_post_frame
+        fin = idx + 3*pre_post_frame+1
 
         output = valid_frames[center]
         inputs = n.concatenate([valid_frames[start:center]\
